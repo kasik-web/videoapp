@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const keyAPI = "3fd2be6f0c70a2a598f084ddfb75487c";
-const mostPopularUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${keyAPI}&language=ru-RU&page=`;
+const mostPopularUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${keyAPI}&language=ru-US&page=`;
 const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${keyAPI}&query=`;
 
 export async function getMostPopular(page = 1) {
