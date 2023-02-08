@@ -8,7 +8,9 @@ export function renderMostPopular(page) {
   cards.innerHTML = "";
   let fragment = "";
   api.getMostPopular(page).then((res) => {
+    
     for (let i = 0; i < res.results.length; i++) {
+      
       fragment += `<div
               class="card mb-1"
               style="
@@ -28,7 +30,8 @@ export function renderMostPopular(page) {
                   <div class="col-md-10 text-center">
                   <div class="col-8 ml-auto mr-auto">
                       <div class="card-body">
-                      <h1 class="card-title">${res.results[i].title}</h1>
+                      <h1 class="card-title mb-3">${res.results[i].title}</h1>
+                      <h3 class="mb-3" style="color: #F7943C">Imdb: ${res.results[i].vote_average}</h3>
                       <p class="card-text" style="font-size: 20px">
                           ${res.results[i].overview}
                       </p>
