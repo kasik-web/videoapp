@@ -315,7 +315,7 @@ export function renderMovieDetail(id){
           ${res.overview}
           </p>               
                 <iframe id="ytplayer" type="text/html" width="95%" height="400"
-                    src="http://www.youtube.com/embed/${trailer}"
+                    src="https://www.youtube.com/embed/${trailer}"
                     frameborder="0"
                     showinfo="0"
                     fs="0"
@@ -382,7 +382,7 @@ export function renderMovieDetail(id){
           ${res.overview}
           </p>               
                 <iframe id="ytplayer" type="text/html" width="95%" height="400"
-                    src="http://www.youtube.com/embed/${trailer}"
+                    src="https://www.youtube.com/embed/${trailer}"
                     frameborder="0"
                     showinfo="0"
                     fs="0"
