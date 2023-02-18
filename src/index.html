@@ -17,11 +17,12 @@
 
     <title>Document</title>
   </head>
+
   <body>
     <div class="container-fluid mb-1">
       <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
         <div class="container-fluid">
-          <a class="navbar-brand home pr-5" href="/">Home</a>
+          <a class="navbar-brand home pr-5" href="" >Home</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -57,7 +58,7 @@
               </li> -->
 
               <li class="nav-item">
-                <a class="nav-link active">Favorite Films</a>
+                <a class="nav-link active" id="btnFavorite" style="cursor: pointer;">Favorite Films</a>
               </li>
 
               <li class="nav-item">
@@ -87,6 +88,9 @@
       </nav>
     </div>
     <div class="container-fluid cardbody"></div>
+    <div class="position-fixed bottom-0 end-0" id="btnUp" style="margin-right: 1%; margin-bottom: 1%; display:none;">
+      <button class="btn btn-outline-danger" title="Вверх"><i class="fa-solid fa-up-long fa-3x"></i></button>
+    </div>
 
     
   </body>

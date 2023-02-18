@@ -10,7 +10,7 @@ const movieTrailerEnUrlFirst = `https://api.themoviedb.org/3/movie/`;
 const movieTrailerEnUrlEnd = `/videos?api_key=${keyAPI}&language=en-US`;
 const genresList = `https://api.themoviedb.org/3/genre/movie/list?api_key=${keyAPI}&language=${language}-US`;
 
-export async function getMostPopular(page = 1) {
+export async function getMostPopular(page) {
   try {
     localStorage.setItem('page', page)
     const response = await axios.get(`${mostPopularUrl}${page}`);    
@@ -33,7 +33,7 @@ export async function getSearchResults(request, page = 1) {
 
 export async function getMovieDetail(id) {
   try {
-    const response = await axios.get(`${movieDetailUrlFirst}${id}${movieDetailUrlEnd}&append_to_response=videos,credits`);   
+    const response = await axios.get(`${movieDetailUrlFirst}${id}${movieDetailUrlEnd}&append_to_response=videos,credits,recommendations`);   
     return response.data;
   } catch (err) {
     console.log(err);

@@ -7,19 +7,57 @@ import "@fortawesome/fontawesome-free/js/regular"; // https://fontawesome.com/ic
 import "@fortawesome/fontawesome-free/js/brands"; // https://fontawesome.com/icons?d=gallery&s=brands&m=free
 
 document.addEventListener("DOMContentLoaded", (e) => {  
-  ui.renderMostPopular(); 
+  history.replaceState({}, '', `most_popular&p=1`);  
+  ui.renderMostPopular();
   events.clickOnMovieToDetail();
+  events.scrollUp();
 });
 
 const btnSearch = document.querySelector(".btnsearch");
 const request = document.querySelector(".input");
+const btnUp = document.querySelector('#btnUp');
+const btnFavorite = document.querySelector('#btnFavorite');
+const btnHome = document.querySelector('.home');
 
+window.addEventListener('popstate', (e) => {
+  let route = document.location.pathname;  
+  route = route.split('/');
+  route = route[1].split('&');
+  
+  if(route[0] === 'most_popular'){    
+    ui.renderMostPopular(history.state.scrollTop, route[1].slice(2));
+    console.log(route[1].slice(2))
+  }
 
+  route = document.location.pathname;
+  route = route.split('/');  
+  if(route[1] === 'favorite_movies'){
+    ui.renderFavoriteList(history.state.scrollTop);
+  }
 
-btnSearch.addEventListener("click", (e) => {
-  e.preventDefault();
-  ui.renderSearchResult(request.value);
+  route = document.location.pathname;
+  route = route.split('=');  
+  if(route[0] === '/movie_id'){
+    ui.renderMovieDetail(route[1]);    
+  }
 });
 
+window.onscroll = () => {
+  if(window.pageYOffset > 600){
+    btnUp.style.display = "block"    
+  }
+  else{
+    btnUp.style.display = 'none';
+  }
+}
 
+btnHome.addEventListener('click', () => {
+  e.preventDefault();
+  ui.renderMostPopular();
+})
 
+btnFavorite.addEventListener('click', () => {
+  history.replaceState({page: history.state.page, scrollTop: window.pageYOffset}, '');
+  history.pushState({page: history.state.page + 1}, '', '/favorite_movies');
+  ui.renderFavoriteList();  
+})
