@@ -40,12 +40,17 @@ export function renderMostPopular(scroll = 0, page = 1) {
         }        
 
         let heart = `<i></i>`
-        if(!favorites.includes(String(res.results[i].id))){        
-          heart = `<i class="fa-regular fa-heart fa-2x"></i>`;          
-        }
-        else if(favorites.includes(String(res.results[i].id))){
-          heart = `<i class="fa-solid fa-heart fa-2x"></i>`;               
-        }
+   if(favorites === null){
+    heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+   }
+   else{
+      if(!favorites.includes(String(res.results[i].id))){
+        heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+      }
+      else if(favorites.includes(String(res.results[i].id))){
+        heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
+      }
+   }  
         
         fragment += `<div class="card mb-1" id="${res.results[i].id}"
         style="
@@ -284,12 +289,17 @@ export async function renderMovieDetail(id){
    }) 
    
    let heart = `<i></i>`
-        if(!favorites.includes(String(id))){
-          heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
-        }
-        else if(favorites.includes(String(id))){
-          heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
-        }
+   if(favorites === null){
+    heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+   }
+   else{
+      if(!favorites.includes(String(id))){
+        heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+      }
+      else if(favorites.includes(String(id))){
+        heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
+      }
+   }       
 
    let trailer = '';
    if(res.videos.results[0]){
