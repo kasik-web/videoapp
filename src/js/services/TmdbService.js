@@ -1,6 +1,7 @@
 import axios from "axios";
+import * as lang from "../views/language";
 
-const language = "ru"
+const language = lang.getCurrentLang();
 const keyAPI = "bad7f024e43bd5773100059ee65d269c";
 const mostPopularUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${keyAPI}&language=${language}-US&page=`;
 const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${keyAPI}&query=`;

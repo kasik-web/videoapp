@@ -1,5 +1,6 @@
 import * as api from "../services/TmdbService";
 import * as events from "./events";
+import * as lang from "./language"
 
 const imageBaseUrl = "https://image.tmdb.org/t/p/w1280";
 let cards = document.querySelector(".cardbody");
@@ -39,7 +40,7 @@ export function renderMostPopular(scroll = 0, page = 1) {
           overview += '...'
         }        
 
-        let heart = `<i></i>`
+  let heart = `<i></i>`
    if(favorites === null){
     heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
    }
@@ -49,7 +50,7 @@ export function renderMostPopular(scroll = 0, page = 1) {
       }
       else if(favorites.includes(String(res.results[i].id))){
         heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
-      }
+      }      
    }  
         
         fragment += `<div class="card mb-1" id="${res.results[i].id}"
@@ -69,8 +70,8 @@ export function renderMostPopular(scroll = 0, page = 1) {
             <div class="row">            
                 <div class="card-body ">
                   <div class="d-flex">
-                    <div class="mr-auto p-3">
-                      ${heart}
+                    <div class="mr-auto p-3 heart">
+                      <button class="btn btn-outline btn-fav">${heart}</button>
                     </div>
                     <div class="mr-auto ml-auto">
                       <h2 class="card-title mb-2">${res.results[i].title}</h2>
@@ -276,6 +277,14 @@ export async function renderMovieDetail(id){
     `;    
    };
 
+   let recTitle;
+   if(lang.getCurrentLang() === "en"){
+    recTitle = 'Recomended films:';
+   }
+   else if(lang.getCurrentLang() === "ru"){
+    recTitle = 'Рекомендуемые фильмы:';
+   }
+
    let creditsString = '';
    let creditsCount = 0;
    res.credits.cast.forEach(cast => {
@@ -290,7 +299,7 @@ export async function renderMovieDetail(id){
    
    let heart = `<i></i>`
    if(favorites === null){
-    heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+    heart = `<i class="fa-regular fa-heart fa-2x"></i>`;    
    }
    else{
       if(!favorites.includes(String(id))){
@@ -298,7 +307,7 @@ export async function renderMovieDetail(id){
       }
       else if(favorites.includes(String(id))){
         heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
-      }
+      }      
    }       
 
    let trailer = '';
@@ -350,7 +359,7 @@ export async function renderMovieDetail(id){
                   disablekb="0"
                   rel="0">
               </iframe>
-              <h5 class="mt-3">Рекомендуемые фильмы:</h5>
+              <h5 class="mt-3">${recTitle}</h5>
               <div class="row row-rec mt-4">
                   ${recommendationsString}
               </div>
@@ -360,8 +369,7 @@ export async function renderMovieDetail(id){
       </div>
     </div>`;
     
-    cards.insertAdjacentHTML("afterbegin", fragment);
-    // events.clickOnBackButton();    
+    cards.insertAdjacentHTML("afterbegin", fragment);        
     events.Favorite(id);    
     setTimeout(() => {events.clickRecomendation(res.id), 5000});   
     
@@ -383,9 +391,7 @@ export async function renderMovieDetail(id){
           background-color: rgba(22, 21, 21, 0.514);">
         <div class="row row-main g-0">
           <div class="col-md-3">
-            <div class="container ml-auto mr-auto sticky-top">
-              <button class="btn btn-secondary btn-back p-2"
-              style="z-index: 9999; position: absolute"><i class="fa-solid fa-arrow-left fa-2x"></i></button>
+            <div class="container ml-auto mr-auto sticky-top">              
                 <img
                   src="${imageBaseUrl}${res.poster_path}"
                   class="img-fluid rounded-start"
@@ -422,7 +428,7 @@ export async function renderMovieDetail(id){
                     disablekb="0"
                     rel="0">
                 </iframe>
-                <h5 class="mt-3">Рекомендуемые фильмы:</h5>
+                <h5 class="mt-3">${recTitle}</h5>
                 <div class="row mt-4">
                     ${recommendationsString}
                 </div>
@@ -432,15 +438,11 @@ export async function renderMovieDetail(id){
         </div>
       </div>`;
     
-    cards.insertAdjacentHTML("afterbegin", fragment);
-    // events.clickOnBackButton();  
-    events.Favorite(id);   
-    
+    cards.insertAdjacentHTML("afterbegin", fragment);     
+    events.Favorite(id);    
     })
    }   
-   
-  })
-   
+  })   
 }
 
 export function renderFavoriteList(scroll){
@@ -497,7 +499,7 @@ export function renderFavoriteList(scroll){
                   <div class="card-body ">
                     <div class="d-flex">
                       <div class="mr-auto p-3">
-                        ${heart}
+                      <button class="btn btn-outline btn-fav">${heart}</button>
                       </div>
                       <div class="mr-auto ml-auto">
                         <h2 class="card-title mb-2">${res.title}</h2>
@@ -519,65 +521,18 @@ export function renderFavoriteList(scroll){
         
         cards.insertAdjacentHTML("afterbegin", fragment);
              
-      })
-      
-      // events.clickOnMovieToDetailFromFavorite()
-              
-    })   
-        // for(let i = 1; i < results.length; i++){          
-                  
-        // }
-        // const currentPage = res.page;
-        // if (currentPage == 1) {
-        //   fragment += `
-        // <div class="row text-center">
-        //     <nav aria-label="Page navigation example">
-        //       <ul class="pagination pagination-lg justify-content-center">
-        //         <li class="page-item">
-        //           <a class="page-link"  aria-label="Previous">
-        //             <span aria-hidden="true">&laquo;</span>
-        //           </a>
-        //         </li>
-        //         <li class="page-item active" aria-current="page">
-        //           <span class="page-link currentpage">1</span>
-        //         </li>
-                
-        //         <li class="page-item">
-        //           <a class="page-link"  aria-label="Next">
-        //             <span aria-hidden="true">&raquo;</span>
-        //           </a>
-        //         </li>
-        //       </ul>
-        //     </nav>
-        //   </div>`;
-        // } else {
-        //   fragment += `
-        //   <div class="row text-center">
-        //       <nav aria-label="Page navigation example">
-        //         <ul class="pagination pagination-lg justify-content-center">
-        //           <li class="page-item">
-        //             <a class="page-link" aria-label="Previous">
-        //               <span aria-hidden="true">&laquo;</span>
-        //             </a>
-        //           </li>
-                  
-        //           <li class="page-item active" aria-current="page">
-        //             <span class="page-link currentpage">${currentPage}</span>
-        //           </li>              
-                  
-        //           <li class="page-item">
-        //             <a class="page-link" aria-label="Next">
-        //               <span aria-hidden="true">&raquo;</span>
-        //             </a>
-        //           </li>
-        //         </ul>
-        //       </nav>
-        //     </div>`;
-        // }
-
-        
-        // events.btnEventPopular();        
+      })    
+    })  
+                     
         window.scrollTo(0, scroll);
+  }
+  else{    
+    if(lang.getCurrentLang() === "en"){
+      cards.innerHTML = `<h3 class="no-fav" style="text-align: center;">No favorit films</h3>`;
+    }
+    else if(lang.getCurrentLang() === "ru"){
+      cards.innerHTML = `<h3 class="no-fav" style="text-align: center;">Избранных фильмов еще нету</h3>`;
+    }    
   }
     
 }
