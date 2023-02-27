@@ -5,9 +5,20 @@ import * as lang from "./language"
 const imageBaseUrl = "https://image.tmdb.org/t/p/w1280";
 let cards = document.querySelector(".cardbody");
 
-export function renderMostPopular(scroll = 0, page = 1) { 
-  cards.innerHTML = "";
-  let fragment = "";
+export function renderMostPopular(scroll = 0, page = 1) {  
+  cards.innerHTML = '';
+  let fragment = '';
+  let cardview = false;
+
+  if(localStorage.getItem('viewType') === 'card'){cardview = true}
+
+  if(cardview){
+    fragment = `<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-4 cards">`;
+  }
+  else{
+    fragment = '';
+  }
+  
   let favorites = JSON.parse(localStorage.getItem('fav'));  
 
   api.getGenresList().then((result) => {
@@ -40,57 +51,82 @@ export function renderMostPopular(scroll = 0, page = 1) {
           overview += '...'
         }        
 
-  let heart = `<i></i>`
-   if(favorites === null){
-    heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
-   }
-   else{
-      if(!favorites.includes(String(res.results[i].id))){
-        heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
-      }
-      else if(favorites.includes(String(res.results[i].id))){
-        heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
-      }      
-   }  
-        
-        fragment += `<div class="card mb-1" id="${res.results[i].id}"
-        style="
-          max-width: auto;
-          border-width: 5px;
-          background-color: rgba(22, 21, 21, 0.514);">
-        <div class="row row-main g-0">
-          <div class="col-md-2">
-            <img
-              src="${imageBaseUrl}${res.results[i].poster_path}"
-              class="img-fluid rounded-start"
-              alt="..."
-            />
-          </div>
-          <div class="col-md-10 text-center ">
-            <div class="row">            
-                <div class="card-body ">
-                  <div class="d-flex">
-                    <div class="mr-auto p-3 heart">
-                      <button class="btn btn-outline btn-fav">${heart}</button>
+        let heart = `<i></i>`
+        if(favorites === null){
+          heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+        }
+        else{
+            if(!favorites.includes(String(res.results[i].id))){
+              heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+            }
+            else if(favorites.includes(String(res.results[i].id))){
+              heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
+            }      
+        }  
+    
+        if(!cardview){
+          fragment += `<div class="card mb-1" id="${res.results[i].id}"
+          style="
+            max-width: auto;
+            border-width: 5px;
+            background-color: rgba(22, 21, 21, 0.514);">
+          <div class="row row-main g-0">
+            <div class="col-md-2">
+              <img
+                src="${imageBaseUrl}${res.results[i].poster_path}"
+                class="img-fluid rounded-start"
+                alt="..."
+              />
+            </div>
+            <div class="col-md-10 text-center ">
+              <div class="row">            
+                  <div class="card-body ">
+                    <div class="d-flex">
+                      <div class="mr-auto p-3 heart">
+                        <button class="btn btn-outline btn-fav">${heart}</button>
+                      </div>
+                      <div class="mr-auto ml-auto">
+                        <h2 class="card-title mb-2">${res.results[i].title}</h2>
+                        <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
+                      </div> 
+                      <div class="ml-auto p-3">
+                        <h3>Imdb: ${res.results[i].vote_average}</h3>
+                      </div>
+                    </div>                  
+                    <p class="card-text" style="font-size: 20px">
+                    ${overview}
+                    </p>               
+                  </div>
+                
+              </div>          
+            </div>
+        </div>
+        </div>`;
+        }
+        else{          
+            fragment += `
+            <div class="col" id="${res.results[i].id}">
+              <div class="card text-bg-dark card-main" >
+                <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
+                <div class="card-img-overlay">
+                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8)">${res.results[i].title}</h4>
+                  <div class="row">
+                    <div class="col">
+                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%" class="btn btn-outline btn-fav">${heart}</button>                                          
                     </div>
-                    <div class="mr-auto ml-auto">
-                      <h2 class="card-title mb-2">${res.results[i].title}</h2>
-                      <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
-                    </div> 
-                    <div class="ml-auto p-3">
-                      <h3>Imdb: ${res.results[i].vote_average}</h3>
-                    </div>
-                  </div>                  
-                  <p class="card-text" style="font-size: 20px">
-                  ${overview}
-                  </p>               
+                    <div class="col">
+                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%"">Imdb: ${res.results[i].vote_average}</h5>
+                    </div>  
+                  </div>
                 </div>
-              
-            </div>          
-          </div>
-      </div>
-      </div>`;
+              </div>
+            </div>             
+          `
+        }          
+               
       }
+      fragment += `</div>`
+
       const currentPage = res.page;
       if (currentPage == 1) {
         fragment += `
@@ -138,15 +174,14 @@ export function renderMostPopular(scroll = 0, page = 1) {
             </nav>
           </div>`;
       }
-      cards.insertAdjacentHTML("afterbegin", fragment);
-      
-      events.btnEventPopular();      
-      
+      cards.insertAdjacentHTML("afterbegin", fragment);                 
       window.scrollTo(0, scroll);
+      events.clickOnMovieToDetail();
+      events.btnEventPopular();
     });
-    
+        
   })
-  
+   
 }
 
 export function renderSearchResult(request, page = 1) {
@@ -232,11 +267,8 @@ export function renderSearchResult(request, page = 1) {
           </nav>
         </div>`;
     }
-    cards.insertAdjacentHTML("afterbegin", fragment);
-    
+    cards.insertAdjacentHTML("afterbegin", fragment);    
     events.btnEventSearch(request);
-    
-
   });
 }
 
@@ -278,11 +310,17 @@ export async function renderMovieDetail(id){
    };
 
    let recTitle;
+   let actors;
+   let genres;
    if(lang.getCurrentLang() === "en"){
     recTitle = 'Recomended films:';
+    actors = 'Actors';
+    genres = 'Genres';
    }
    else if(lang.getCurrentLang() === "ru"){
     recTitle = 'Рекомендуемые фильмы:';
+    actors = 'В ролях';
+    genres = 'Жанры';
    }
 
    let creditsString = '';
@@ -341,8 +379,8 @@ export async function renderMovieDetail(id){
                 <div class="mr-auto ml-auto p-2">
                   <h2 class="card-title mb-2">${res.title}</h2>
                   <h4 class="mb-2" > ${rDate[0]}</h4>
-                  <h5 class="mb-3">Жанры: ${genresString}</h5>
-                  <h6 class="mb-3">В ролях: ${creditsString}</h6>
+                  <h5 class="mb-3">${genres}: ${genresString}</h5>
+                  <h6 class="mb-3">${actors}: ${creditsString}</h6>
                 </div> 
                 <div class="ml-auto p-3">
                   <h3>Imdb: ${vote}</h3>
@@ -448,6 +486,11 @@ export async function renderMovieDetail(id){
 export function renderFavoriteList(scroll){
   
   cards.innerHTML = "";
+  let cardview = false;
+
+  if(localStorage.getItem('viewType') === 'card'){cardview = true}
+
+  
   let fragment = "";
   let favorites = JSON.parse(localStorage.getItem('fav'));
 

@@ -8,8 +8,9 @@ import "@fortawesome/fontawesome-free/js/regular"; // https://fontawesome.com/ic
 import "@fortawesome/fontawesome-free/js/brands"; // https://fontawesome.com/icons?d=gallery&s=brands&m=free
 
 
-document.addEventListener("DOMContentLoaded", (e) => {
+document.addEventListener("DOMContentLoaded", (e) => {  
   lang.langSelect();
+  events.viewType();
     
   if(document.location.href === 'http://localhost:9000/' || document.location.href === 'http://localhost:9000/most_popular&p=1' ||
     document.location.href === 'https://video-app-site.web.app/' || document.location.href === 'https://video-app-site.web.app/most_popular&p=1'){
@@ -17,19 +18,27 @@ document.addEventListener("DOMContentLoaded", (e) => {
     ui.renderMostPopular();
   }
   else{
-    const url = document.location.pathname;
+    const url = document.location.pathname;    
     
-    if(document.location.pathname === "/favorite_movies"){
+    if(url === "/favorite_movies"){
       history.replaceState({page: history.state.page, scrollTop: window.pageYOffset}, '');
       history.pushState({page: history.state.page + 1}, '', '/favorite_movies');
       ui.renderFavoriteList();
     }
-    if(url.includes('movie_id')){
-      const id = url.split('=');
+     else if(url.includes('movie_id')){
+      const id = url.split('=');      
       ui.renderMovieDetail(id[1]);
     }
+    else if(url.includes('most_popular')){
+      const page = url.split('=');
+      ui.renderMostPopular(0, page[1]);
+    }
+    else{
+      history.replaceState({}, '', `most_popular&p=1`);
+      ui.renderMostPopular();      
+    }
   }  
-  events.clickOnMovieToDetail();
+  // events.clickOnMovieToDetail();
   events.scrollUp();
 });
 
@@ -45,8 +54,7 @@ window.addEventListener('popstate', (e) => {
   route = route[1].split('&');
   
   if(route[0] === 'most_popular'){    
-    ui.renderMostPopular(history.state.scrollTop, route[1].slice(2));
-    console.log(route[1].slice(2))
+    ui.renderMostPopular(history.state.scrollTop, route[1].slice(2));    
   }
 
   route = document.location.pathname;
@@ -71,12 +79,7 @@ window.onscroll = () => {
   }
 }
 
-btnHome.addEventListener('click', () => {
-  e.preventDefault();
-  ui.renderMostPopular();
-})
-
-btnFavorite.addEventListener('click', () => {
+btnFavorite.addEventListener('click', (e) => {
   history.replaceState({page: history.state.page, scrollTop: window.pageYOffset}, '');
   history.pushState({page: history.state.page + 1}, '', '/favorite_movies');
   ui.renderFavoriteList();  
