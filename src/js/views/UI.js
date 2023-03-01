@@ -5,7 +5,8 @@ import * as lang from "./language"
 const imageBaseUrl = "https://image.tmdb.org/t/p/w1280";
 let cards = document.querySelector(".cardbody");
 
-export function renderMostPopular(scroll = 0, page = 1) {  
+export function renderMostPopular(scroll = 0, page = 1) {
+  cards = document.querySelector(".cardbody");  
   cards.innerHTML = '';
   let fragment = '';
   let cardview = false;
@@ -13,7 +14,7 @@ export function renderMostPopular(scroll = 0, page = 1) {
   if(localStorage.getItem('viewType') === 'card'){cardview = true}
 
   if(cardview){
-    fragment = `<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-4 cards">`;
+    fragment = `<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">`;
   }
   else{
     fragment = '';
@@ -28,7 +29,7 @@ export function renderMostPopular(scroll = 0, page = 1) {
 
       for (let i = 0; i < res.results.length; i++) {
         const rDate = res.results[i].release_date.split('-');
-        const overviewLength = 420;
+        const overviewLength = 400;
         let overview = res.results[i].overview.slice(0, overviewLength);        
   
         let genresString = '';
@@ -82,18 +83,18 @@ export function renderMostPopular(scroll = 0, page = 1) {
               <div class="row">            
                   <div class="card-body ">
                     <div class="d-flex">
-                      <div class="mr-auto p-3 heart">
+                      <div class="mr-auto p-1 heart">
                         <button class="btn btn-outline btn-fav">${heart}</button>
                       </div>
                       <div class="mr-auto ml-auto">
-                        <h2 class="card-title mb-2">${res.results[i].title}</h2>
+                        <h2 class="card-title mb-2" >${res.results[i].title}</h2>
                         <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
                       </div> 
                       <div class="ml-auto p-3">
                         <h3>Imdb: ${res.results[i].vote_average}</h3>
                       </div>
                     </div>                  
-                    <p class="card-text" style="font-size: 20px">
+                    <p style="font-size: 18px">
                     ${overview}
                     </p>               
                   </div>
@@ -109,13 +110,13 @@ export function renderMostPopular(scroll = 0, page = 1) {
               <div class="card text-bg-dark card-main" >
                 <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
                 <div class="card-img-overlay">
-                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8)">${res.results[i].title}</h4>
+                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8); font-size:1.8vw;">${res.results[i].title}</h4>
                   <div class="row">
-                    <div class="col">
-                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%" class="btn btn-outline btn-fav">${heart}</button>                                          
+                    <div class="col-4">
+                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%; font-size:1.4vw" class="btn btn-outline btn-fav">${heart}</button>                                          
                     </div>
-                    <div class="col">
-                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%"">Imdb: ${res.results[i].vote_average}</h5>
+                    <div class="col-8">
+                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; font-size:1.6vw;">Imdb: ${res.results[i].vote_average}</h5>
                     </div>  
                   </div>
                 </div>
@@ -272,7 +273,8 @@ export function renderSearchResult(request, page = 1) {
   });
 }
 
-export async function renderMovieDetail(id){  
+export async function renderMovieDetail(id){ 
+  cards = document.querySelector(".cardbody"); 
   cards.innerHTML = "";
   let fragment = ""; 
   let favorites = JSON.parse(localStorage.getItem('fav'));    
@@ -487,11 +489,17 @@ export function renderFavoriteList(scroll){
   
   cards.innerHTML = "";
   let cardview = false;
-
+  let fragment = "";
   if(localStorage.getItem('viewType') === 'card'){cardview = true}
 
-  
-  let fragment = "";
+  if(cardview){
+    cards.insertAdjacentHTML('afterbegin', '<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">');
+    cards = document.querySelector('.row-cols-2');   
+  }
+  else{
+    fragment = '';
+  }
+
   let favorites = JSON.parse(localStorage.getItem('fav'));
 
   if(favorites.length !== 0){    
@@ -524,49 +532,71 @@ export function renderFavoriteList(scroll){
             heart = `<i class="fa-solid fa-heart fa-2x"></i>`;               
           }
           
-          fragment = `<div class="card mb-1" id="${res.id}"
-          style="
-            max-width: auto;
-            border-width: 5px;
-            background-color: rgba(22, 21, 21, 0.514);">
-          <div class="row row-main g-0">
-            <div class="col-md-2">
-              <img
-                src="${imageBaseUrl}${res.poster_path}"
-                class="img-fluid rounded-start"
-                alt="..."
-              />
-            </div>
-            <div class="col-md-10 text-center ">
-              <div class="row">            
-                  <div class="card-body ">
-                    <div class="d-flex">
-                      <div class="mr-auto p-3">
-                      <button class="btn btn-outline btn-fav">${heart}</button>
-                      </div>
-                      <div class="mr-auto ml-auto">
-                        <h2 class="card-title mb-2">${res.title}</h2>
-                        <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
-                      </div> 
-                      <div class="ml-auto p-3">
-                        <h3>Imdb: ${res.vote_average}</h3>
-                      </div>
-                    </div>                  
-                    <p class="card-text" style="font-size: 20px">
-                    ${overview}
-                    </p>               
+          if(!cardview){
+            fragment = `<div class="card mb-1" id="${res.id}"
+            style="
+              max-width: auto;
+              border-width: 5px;
+              background-color: rgba(22, 21, 21, 0.514);">
+            <div class="row row-main g-0">
+              <div class="col-md-2">
+                <img
+                  src="${imageBaseUrl}${res.poster_path}"
+                  class="img-fluid rounded-start"
+                  alt="..."
+                />
+              </div>
+              <div class="col-md-10 text-center ">
+                <div class="row">            
+                    <div class="card-body ">
+                      <div class="d-flex">
+                        <div class="mr-auto p-3">
+                        <button class="btn btn-outline btn-fav">${heart}</button>
+                        </div>
+                        <div class="mr-auto ml-auto">
+                          <h2 class="card-title mb-2">${res.title}</h2>
+                          <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
+                        </div> 
+                        <div class="ml-auto p-3">
+                          <h3>Imdb: ${res.vote_average}</h3>
+                        </div>
+                      </div>                  
+                      <p class="card-text" style="font-size: 20px">
+                      ${overview}
+                      </p>               
+                    </div>                          
+                  </div>          
+                </div>
+              </div>
+            </div>`;
+          }
+
+          else{
+            fragment = `
+            <div class="col" id="${res.id}">
+              <div class="card text-bg-dark card-main" >
+                <img src="${imageBaseUrl}${res.poster_path}"  class="card-img" alt="...">
+                <div class="card-img-overlay">
+                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8); font-size:1.8vw;">${res.title}</h4>
+                  <div class="row">
+                    <div class="col-4">
+                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%; font-size:1.4vw" class="btn btn-outline btn-fav">${heart}</button>                                          
+                    </div>
+                    <div class="col-8">
+                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; font-size:1.6vw;">Imdb: ${res.vote_average}</h5>
+                    </div>  
                   </div>
-                
-              </div>          
-            </div>
-        </div>
-        </div>`;
-        
-        cards.insertAdjacentHTML("afterbegin", fragment);
-             
-      })    
+                </div>
+              </div>
+            </div>             
+          `
+          }           
+          cards.insertAdjacentHTML("afterbegin", fragment);        
+      })
+      
     })  
-                     
+    
+    events.clickOnMovieToDetail();       
         window.scrollTo(0, scroll);
   }
   else{    
