@@ -14,7 +14,7 @@ export function renderMostPopular(scroll = 0, page = 1) {
   if(localStorage.getItem('viewType') === 'card'){cardview = true}
 
   if(cardview){
-    fragment = `<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">`;
+    fragment = `<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">`;
   }
   else{
     fragment = '';
@@ -82,15 +82,15 @@ export function renderMostPopular(scroll = 0, page = 1) {
             <div class="col-md-10 text-center ">
               <div class="row">            
                   <div class="card-body ">
-                    <div class="d-flex">
-                      <div class="mr-auto p-1 heart">
+                    <div class="d-flex" >
+                      <div class="mr-auto heart">
                         <button class="btn btn-outline btn-fav">${heart}</button>
                       </div>
-                      <div class="mr-auto ml-auto">
+                      <div class="mr-auto ml-auto" style="overflow-x:hidden;">
                         <h2 class="card-title mb-2" >${res.results[i].title}</h2>
                         <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
                       </div> 
-                      <div class="ml-auto p-3">
+                      <div class="ml-auto p-1">
                         <h3>Imdb: ${res.results[i].vote_average}</h3>
                       </div>
                     </div>                  
@@ -106,17 +106,17 @@ export function renderMostPopular(scroll = 0, page = 1) {
         }
         else{          
             fragment += `
-            <div class="col" id="${res.results[i].id}">
-              <div class="card text-bg-dark card-main" >
+            <div class="col"  id="${res.results[i].id}">
+              <div class="card text-bg-dark card-main"  >
                 <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
                 <div class="card-img-overlay">
-                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8); font-size:1.8vw;">${res.results[i].title}</h4>
+                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8)">${res.results[i].title}</h4>
                   <div class="row">
                     <div class="col-4">
-                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%; font-size:1.4vw" class="btn btn-outline btn-fav">${heart}</button>                                          
+                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%" class="btn btn-outline btn-fav">${heart}</button>                                          
                     </div>
                     <div class="col-8">
-                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; font-size:1.6vw;">Imdb: ${res.results[i].vote_average}</h5>
+                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; margin-top: 7%">Imdb: ${res.results[i].vote_average}</h5>
                     </div>  
                   </div>
                 </div>
@@ -186,90 +186,183 @@ export function renderMostPopular(scroll = 0, page = 1) {
 }
 
 export function renderSearchResult(request, page = 1) {
-  cards.innerHTML = "";
-  let fragment = "";
+  cards = document.querySelector(".cardbody");  
+  cards.innerHTML = '';
+  let fragment = '';
+  let cardview = false;
+
+  if(localStorage.getItem('viewType') === 'card'){cardview = true}
+
+  if(cardview){
+    fragment = `<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">`;
+  }
+  else{
+    fragment = '';
+  }
+  
+  let favorites = JSON.parse(localStorage.getItem('fav'));
+  
   history.pushState({page: history.state.page + 1}, '', `/search=${request}&page=${page}`); 
 
-  api.getSearchResults(request, page).then((res) => {
-    for (let i = 0; i < res.results.length; i++) {
-      fragment += `<div
-              class="card mb-1"
-              style="
-                  max-width: auto;
-                  border-width: 5px;
-                  background-color: rgba(22, 21, 21, 0.514);
-              "
-              >
-              <div class="row g-0">
-                  <div class="col-md-2">
-                  <img
-                      src="${imageBaseUrl}${res.results[i].poster_path}"
-                      class="img-fluid rounded-start"
-                      alt="..."
-                  />
-                  </div>
-                  <div class="col-md-10 text-center">
-                  <div class="col-8 ml-auto mr-auto">
-                      <div class="card-body">
-                      <h1 class="card-title">${res.results[i].title}</h1>
-                      <p class="card-text" style="font-size: 20px">
-                          ${res.results[i].overview}
-                      </p>
-                      </div>
-                  </div>
-                  </div>
+  api.getGenresList().then((result) => {
+    const genres = result.genres;
+  
+      api.getSearchResults(request, page).then((res) => {
+
+        console.log(res)
+        for (let i = 0; i < res.results.length; i++) {
+          const rDate = res.results[i].release_date.split('-');
+          const overviewLength = 400;
+          let overview = res.results[i].overview.slice(0, overviewLength);        
+
+          let genresString = '';
+          const count = 3;
+          let curCount = 0;
+          for(let k = 0; k < res.results[i].genre_ids.length; k++){
+            genres.filter((genre) => {            
+                if(genre.id === res.results[i].genre_ids[k]){                                             
+                  genresString += genre.name;
+                  if(curCount < res.results[i].genre_ids.length -1 && curCount < 2){
+                    genresString += ", "
+                  }
+                }
+            })
+            curCount++;
+            if(curCount === count){break;}
+          }         
+
+          if(res.results[i].overview.length > overviewLength){
+            overview += '...'
+          }        
+
+          let heart = `<i></i>`
+          if(favorites === null){
+            heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+          }
+          else{
+              if(!favorites.includes(String(res.results[i].id))){
+                heart = `<i class="fa-regular fa-heart fa-2x"></i>`;
+              }
+              else if(favorites.includes(String(res.results[i].id))){
+                heart = `<i class="fa-solid fa-heart fa-2x"></i>`;
+              }      
+          }  
+      
+          if(!cardview){
+            fragment += `<div class="card mb-1" id="${res.results[i].id}"
+            style="
+              max-width: auto;
+              border-width: 5px;
+              background-color: rgba(22, 21, 21, 0.514);">
+            <div class="row row-main g-0">
+              <div class="col-md-2">
+                <img
+                  src="${imageBaseUrl}${res.results[i].poster_path}"
+                  class="img-fluid rounded-start"
+                  alt="..."
+                />
               </div>
-              </div>`;
-    }
-    const currentPage = res.page;
-    if (currentPage == 1) {
-      fragment += `
-    <div class="row text-center">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination pagination-lg justify-content-center">
-            <li class="page-item">
-              <a class="page-link"  aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item active" aria-current="page">
-              <span class="page-link currentpage">1</span>
-            </li>
-            
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>`;
-    } else {
-      fragment += `
-      <div class="row text-center">
-          <nav aria-label="Page navigation example">
-            <ul class="pagination pagination-lg justify-content-center">
-              <li class="page-item">
-                <a class="page-link" href="" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              
-              <li class="page-item active" aria-current="page">
-                <span class="page-link currentpage">${currentPage}</span>
-              </li>              
-              
-              <li class="page-item">
-                <a class="page-link" href="" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>`;
-    }
+              <div class="col-md-10 text-center ">
+                <div class="row">            
+                    <div class="card-body ">
+                      <div class="d-flex">
+                        <div class="mr-auto p-1 heart">
+                          <button class="btn btn-outline btn-fav">${heart}</button>
+                        </div>
+                        <div class="mr-auto ml-auto">
+                          <h2 class="card-title mb-2" >${res.results[i].title}</h2>
+                          <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
+                        </div> 
+                        <div class="ml-auto p-1">
+                          <h3>Imdb: ${res.results[i].vote_average}</h3>
+                        </div>
+                      </div>                  
+                      <p style="font-size: 18px">
+                      ${overview}
+                      </p>               
+                    </div>
+                  
+                </div>          
+              </div>
+          </div>
+          </div>`;
+          }
+          else{          
+              fragment += `
+              <div class="col"  id="${res.results[i].id}">
+                <div class="card text-bg-dark card-main"  >
+                  <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
+                  <div class="card-img-overlay">
+                    <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8)">${res.results[i].title}</h4>
+                    <div class="row">
+                      <div class="col-4">
+                        <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%" class="btn btn-outline btn-fav">${heart}</button>                                          
+                      </div>
+                      <div class="col-8">
+                      <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; margin-top: 7%">Imdb: ${res.results[i].vote_average}</h5>
+                      </div>  
+                    </div>
+                  </div>
+                </div>
+              </div>             
+            `
+          }          
+                
+        }
+        fragment += `</div>`
+
+        const currentPage = res.page;
+        if (currentPage == 1) {
+          fragment += `
+        <div class="row text-center">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination pagination-lg justify-content-center">
+                <li class="page-item">
+                  <a class="page-link"  aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item active" aria-current="page">
+                  <span class="page-link currentpage">1</span>
+                </li>
+                
+                <li class="page-item">
+                  <a class="page-link"  aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>`;
+        } else {
+          fragment += `
+          <div class="row text-center">
+              <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-lg justify-content-center">
+                  <li class="page-item">
+                    <a class="page-link" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link currentpage">${currentPage}</span>
+                  </li>              
+                  
+                  <li class="page-item">
+                    <a class="page-link" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>`;
+        }    
+
     cards.insertAdjacentHTML("afterbegin", fragment);    
     events.btnEventSearch(request);
+
+    });
   });
 }
 
@@ -375,7 +468,7 @@ export async function renderMovieDetail(id){
           <div class="row">            
             <div class="card-body ">
               <div class="d-flex">
-                <div class="mr-auto p-1">
+                <div class="mr-auto">
                   <button class="btn btn-outline btn-fav">${heart}</button>
                 </div>
                 <div class="mr-auto ml-auto p-2">
@@ -407,11 +500,11 @@ export async function renderMovieDetail(id){
           </div>          
         </div>
       </div>
-    </div>`;
+    </div>`; 
     
-    cards.insertAdjacentHTML("afterbegin", fragment);        
+    cards.insertAdjacentHTML("afterbegin", fragment);           
     events.Favorite(id);    
-    setTimeout(() => {events.clickRecomendation(res.id), 5000});   
+    events.clickRecomendation(); 
     
    }
    else if(!res.videos.results[0]){
@@ -444,7 +537,7 @@ export async function renderMovieDetail(id){
             <div class="row">            
               <div class="card-body ">
                 <div class="d-flex">
-                  <div class="mr-auto p-1">
+                  <div class="mr-auto">
                     <button class="btn btn-outline btn-fav">${heart}</button>
                   </div>
                   <div class="mr-auto ml-auto p-2">
@@ -469,7 +562,7 @@ export async function renderMovieDetail(id){
                     rel="0">
                 </iframe>
                 <h5 class="mt-3">${recTitle}</h5>
-                <div class="row mt-4">
+                <div class="row row-rec mt-4">
                     ${recommendationsString}
                 </div>
               </div>            
@@ -477,12 +570,13 @@ export async function renderMovieDetail(id){
           </div>
         </div>
       </div>`;
-    
-    cards.insertAdjacentHTML("afterbegin", fragment);     
-    events.Favorite(id);    
+      
+      cards.insertAdjacentHTML("afterbegin", fragment);      
+      events.clickRecomendation();      
+      events.Favorite(id);    
     })
    }   
-  })   
+  }) 
 }
 
 export function renderFavoriteList(scroll){

@@ -154,7 +154,7 @@ export function Favorite(id){
 }
 
 export function clickRecomendation(id){  
-  const recommendationCard = document.querySelector(".row-rec");
+  const recommendationCard = document.querySelector(".row-rec");  
   recommendationCard.addEventListener('click', (e) => {    
     ui.renderMovieDetail(e.target.id);
     history.pushState({page: history.state.page + 1}, '', `/movie_id=${e.target.id}`);

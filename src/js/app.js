@@ -33,6 +33,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
       const page = url.split('=');
       ui.renderMostPopular(0, page[1]);
     }
+    else if(url.includes('search')){
+      const str = url.split('=');
+      const req = str[1].split('$')
+      ui.renderSearchResult(req[0], req[1]);
+    }
     else{
       history.replaceState({}, '', `most_popular&p=1`);
       ui.renderMostPopular();      
@@ -51,8 +56,7 @@ const btnHome = document.querySelector('.home');
 window.addEventListener('popstate', (e) => {
   let route = document.location.pathname;  
   route = route.split('/');
-  route = route[1].split('&');
-  
+  route = route[1].split('&');  
   if(route[0] === 'most_popular'){    
     ui.renderMostPopular(history.state.scrollTop, route[1].slice(2));    
   }
@@ -67,6 +71,14 @@ window.addEventListener('popstate', (e) => {
   route = route.split('=');  
   if(route[0] === '/movie_id'){
     ui.renderMovieDetail(route[1]);    
+  }
+
+  route = document.location.pathname;
+
+  if(route.includes('search')){
+    const str = route.split('=');
+    const req = str[1].split('$')
+    ui.renderSearchResult(req[0], req[1]);
   }
 });
 
@@ -93,5 +105,5 @@ btnHome.addEventListener('click', (e) => {
 
 btnSearch.addEventListener("click", (e) => {
   e.preventDefault();
-  ui.renderSearchResult(request.value);
+  ui.renderSearchResult(request.value);  
 });

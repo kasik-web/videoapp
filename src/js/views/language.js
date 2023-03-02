@@ -48,13 +48,13 @@ export function langSelect(){
     const btnUp = document.querySelector('#btn-up');
 
     if(language === 'en'){
-      btnFavorite.innerHTML = 'Favorite Films';
+      btnFavorite.innerHTML = '<i class="fa-solid fa-heart"></i>  Favorite Films';
       btnHome.innerHTML = 'Home';
       btnSearch.innerHTML = 'Search';      
       btnUp.title = 'Up';
     }
     else if(language === 'ru'){
-      btnFavorite.innerHTML = 'Избранные фильмы';
+      btnFavorite.innerHTML = '<i class="fa-solid fa-heart"></i> Избранные фильмы';
       btnHome.innerHTML = 'Главная';
       btnSearch.innerHTML = 'Поиск';      
       btnUp.title = 'Вверх';
