@@ -8,14 +8,11 @@ export function btnEventPopular() {
   const page = Number(currentPage.textContent);
 
   btnNext.addEventListener("click", () => {
-    ui.renderMostPopular(0, page + 1);    
-    history.pushState({page: history.state.page + 1 , curPage: page + 1}, '', `most_popular&p=${page + 1}`);
-    
+    ui.renderMostPopular(0, page + 1);       
   });
 
   btnPrev.addEventListener("click", () => {
-    ui.renderMostPopular(0, page - 1);
-    history.pushState({page: history.state.page, curPage: page}, `most_popular&p=${page - 1}`); 
+    ui.renderMostPopular(10000, page - 1);       
   });
 }
 

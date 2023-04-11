@@ -4,7 +4,7 @@ import * as lang from "../views/language";
 const language = lang.getCurrentLang();
 const keyAPI = "bad7f024e43bd5773100059ee65d269c";
 const mostPopularUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${keyAPI}&language=${language}-US&page=`;
-const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${keyAPI}&query=`;
+const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${keyAPI}&language=${language}-US&query=`;
 const movieDetailUrlFirst = `https://api.themoviedb.org/3/movie/`;
 const movieDetailUrlEnd = `?api_key=${keyAPI}&language=${language}-US`;
 const movieTrailerEnUrlFirst = `https://api.themoviedb.org/3/movie/`;
@@ -34,7 +34,7 @@ export async function getSearchResults(request, page = 1) {
 
 export async function getMovieDetail(id) {
   try {
-    const response = await axios.get(`${movieDetailUrlFirst}${id}${movieDetailUrlEnd}&append_to_response=videos,credits,recommendations`);   
+    const response = await axios.get(`${movieDetailUrlFirst}${id}${movieDetailUrlEnd}&append_to_response=videos,credits,recommendations,similar`);   
     return response.data;
   } catch (err) {
     console.log(err);

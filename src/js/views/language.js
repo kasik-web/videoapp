@@ -44,19 +44,19 @@ export function langSelect(){
   function translateUiElements(){    
     const btnFavorite = document.querySelector('#btnFavorite');
     const btnHome = document.querySelector('.home');
-    const btnSearch = document.querySelector(".btnsearch");       
+    // const btnSearch = document.querySelector(".btnsearch");       
     const btnUp = document.querySelector('#btn-up');
 
     if(language === 'en'){
       btnFavorite.innerHTML = '<i class="fa-solid fa-heart"></i>  Favorite Films';
       btnHome.innerHTML = 'Home';
-      btnSearch.innerHTML = 'Search';      
+      // btnSearch.innerHTML = 'Search';      
       btnUp.title = 'Up';
     }
     else if(language === 'ru'){
       btnFavorite.innerHTML = '<i class="fa-solid fa-heart"></i> Избранные фильмы';
       btnHome.innerHTML = 'Главная';
-      btnSearch.innerHTML = 'Поиск';      
+      // btnSearch.innerHTML = 'Поиск';      
       btnUp.title = 'Вверх';
     }      
   }

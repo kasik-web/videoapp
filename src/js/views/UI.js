@@ -11,10 +11,11 @@ export function renderMostPopular(scroll = 0, page = 1) {
   let fragment = '';
   let cardview = false;
 
+  history.pushState({page: history.state.page + 1 , curPage: page}, '', `most_popular&p=${page}`);
   if(localStorage.getItem('viewType') === 'card'){cardview = true}
 
   if(cardview){
-    fragment = `<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">`;
+    fragment = `<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 text-center mt-1 mb-3 ms-2 me-2 g-2 cards">`;
   }
   else{
     fragment = '';
@@ -25,10 +26,17 @@ export function renderMostPopular(scroll = 0, page = 1) {
   api.getGenresList().then((result) => {
     const genres = result.genres;
 
-    api.getMostPopular(page).then((res) => {     
-
+    api.getMostPopular(page).then((res) => {
+      
       for (let i = 0; i < res.results.length; i++) {
-        const rDate = res.results[i].release_date.split('-');
+        let rDate;
+        if(res.results[i].release_date == null){
+          rDate = "-";
+        }
+        else{
+          rDate = res.results[i].release_date.split('-');
+        }
+        
         const overviewLength = 400;
         let overview = res.results[i].overview.slice(0, overviewLength);        
   
@@ -105,24 +113,23 @@ export function renderMostPopular(scroll = 0, page = 1) {
         </div>`;
         }
         else{          
-            fragment += `
-            <div class="col"  id="${res.results[i].id}">
-              <div class="card text-bg-dark card-main"  >
-                <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
-                <div class="card-img-overlay">
-                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8)">${res.results[i].title}</h4>
-                  <div class="row">
-                    <div class="col-4">
-                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%" class="btn btn-outline btn-fav">${heart}</button>                                          
-                    </div>
-                    <div class="col-8">
-                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; margin-top: 7%">Imdb: ${res.results[i].vote_average}</h5>
-                    </div>  
+          fragment += `
+          <div class="col"  id="${res.results[i].id}">
+            <div class="card text-bg-dark card-main h-100"  >
+              <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
+              <div class="card-img">                  
+                <div class="row">
+                  <div class="col-6">
+                    <button style="background: rgba(150, 150, 150, 0.85); position: absolute; bottom: 0%; left: 0%;" class="btn btn-outline btn-fav">${heart}</button>                                          
                   </div>
+                  <div class="col-6">
+                  <h5 class="text-dark" style="position: absolute; bottom: 1%; right: 0%; background: rgba(150, 150, 150, 0.85)">Imdb: ${res.results[i].vote_average}</h5>
+                  </div>  
                 </div>
               </div>
-            </div>             
-          `
+            </div>
+          </div>             
+        `
         }          
                
       }
@@ -274,7 +281,7 @@ export function renderSearchResult(request, page = 1) {
                           <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
                         </div> 
                         <div class="ml-auto p-1">
-                          <h3>Imdb: ${res.results[i].vote_average}</h3>
+                          <h3>Imdb: ${Math.round(res.results[i].vote_average *10)/10}</h3>
                         </div>
                       </div>                  
                       <p style="font-size: 18px">
@@ -288,24 +295,23 @@ export function renderSearchResult(request, page = 1) {
           </div>`;
           }
           else{          
-              fragment += `
-              <div class="col"  id="${res.results[i].id}">
-                <div class="card text-bg-dark card-main"  >
-                  <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
-                  <div class="card-img-overlay">
-                    <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8)">${res.results[i].title}</h4>
-                    <div class="row">
-                      <div class="col-4">
-                        <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%" class="btn btn-outline btn-fav">${heart}</button>                                          
-                      </div>
-                      <div class="col-8">
-                      <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; margin-top: 7%">Imdb: ${res.results[i].vote_average}</h5>
-                      </div>  
+            fragment += `
+            <div class="col"  id="${res.results[i].id}">
+              <div class="card text-bg-dark card-main h-100"  >
+                <img src="${imageBaseUrl}${res.results[i].poster_path}"  class="card-img" alt="...">
+                <div class="card-img">                  
+                  <div class="row">
+                    <div class="col-6">
+                      <button style="background: rgba(150, 150, 150, 0.85); position: absolute; bottom: 0%; left: 0%;" class="btn btn-outline btn-fav">${heart}</button>                                          
                     </div>
+                    <div class="col-6">
+                    <h5 class="text-dark" style="position: absolute; bottom: 1%; right: 0%; background: rgba(150, 150, 150, 0.85)">Imdb: ${Math.round(res.results[i].vote_average *10)/10}</h5>
+                    </div>  
                   </div>
                 </div>
-              </div>             
-            `
+              </div>
+            </div>             
+          `
           }          
                 
         }
@@ -359,7 +365,8 @@ export function renderSearchResult(request, page = 1) {
             </div>`;
         }    
 
-    cards.insertAdjacentHTML("afterbegin", fragment);    
+    cards.insertAdjacentHTML("afterbegin", fragment);
+    events.clickOnMovieToDetail();   
     events.btnEventSearch(request);
 
     });
@@ -373,6 +380,7 @@ export async function renderMovieDetail(id){
   let favorites = JSON.parse(localStorage.getItem('fav'));    
  
   api.getMovieDetail(id).then((res) => {   
+    console.log(res);
    const vote = Math.round(res.vote_average * 10) /10;
    const rDate = res.release_date.split('-');
 
@@ -388,16 +396,16 @@ export async function renderMovieDetail(id){
    
    let recommendationsString = '';
    let recCount;   
-   if(res.recommendations.results.length <= 4){
-    recCount = res.recommendations.results.length;    
-   }
+   if(res.similar.results.length <= 4){
+    recCount = res.similar.results.length;    
+   }   
    else{recCount = 5}
    for(let l = 0; l < recCount; l++) {    
     recommendationsString += `    
       <div class="col d-flex">
         <div class="card rec-card text-bg-dark">
-          <img src="${imageBaseUrl}${res.recommendations.results[l].poster_path}" class="card-img" alt="Recomended movie">
-          <div class="card-img-overlay" id="${res.recommendations.results[l].id}" title="${res.recommendations.results[l].title}">                                 
+          <img src="${imageBaseUrl}${res.similar.results[l].poster_path}" class="card-img" alt="Recomended movie">
+          <div class="card-img-overlay" id="${res.similar.results[l].id}" title="${res.similar.results[l].title}">                                 
           </div>
         </div>
       </div>    
@@ -652,7 +660,7 @@ export function renderFavoriteList(scroll){
                           <h4 class="mb-2" > ${rDate[0]} | ${genresString}</h4>
                         </div> 
                         <div class="ml-auto p-3">
-                          <h3>Imdb: ${res.vote_average}</h3>
+                          <h3>Imdb: ${Math.round(res.vote_average *10)/10}</h3>
                         </div>
                       </div>                  
                       <p class="card-text" style="font-size: 20px">
@@ -667,17 +675,16 @@ export function renderFavoriteList(scroll){
 
           else{
             fragment = `
-            <div class="col" id="${res.id}">
-              <div class="card text-bg-dark card-main" >
+            <div class="col"  id="${res.id}">
+              <div class="card text-bg-dark card-main h-100"  >
                 <img src="${imageBaseUrl}${res.poster_path}"  class="card-img" alt="...">
-                <div class="card-img-overlay">
-                  <h4 class="card-title" style="background: rgba(22, 21, 21, 0.8); font-size:1.8vw;">${res.title}</h4>
+                <div class="card-img">                  
                   <div class="row">
-                    <div class="col-4">
-                      <button style="background: rgba(150, 150, 150, 0.75); margin-right: 85%; font-size:1.4vw" class="btn btn-outline btn-fav">${heart}</button>                                          
+                    <div class="col-6">
+                      <button style="background: rgba(150, 150, 150, 0.85); position: absolute; bottom: 0%; left: 0%;" class="btn btn-outline btn-fav">${heart}</button>                                          
                     </div>
-                    <div class="col-8">
-                    <h5 style="background: rgba(22, 21, 21, 0.8); margin-left: 40%; font-size:1.6vw;">Imdb: ${res.vote_average}</h5>
+                    <div class="col-6">
+                    <h5 class="text-dark" style="position: absolute; bottom: 1%; right: 0%; background: rgba(150, 150, 150, 0.85)">Imdb: ${Math.round(res.vote_average *10)/10}</h5>
                     </div>  
                   </div>
                 </div>
